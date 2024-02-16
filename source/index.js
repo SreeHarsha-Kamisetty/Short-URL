@@ -5,11 +5,17 @@ const path = require("path");
 const { connection } = require("./db");
 const { URLModel } = require("./models/url.model");
 const base62 = require('base62');
+const Redis = require("ioredis")
+
+const redis = new Redis({
+    port: process.env.redis_port,
+    host: process.env.redis_host,
+    password: process.env.redis_password
+  
+  });
 
 
 
-let count = 10000000000;
-console.log(base62.encode(count));
 const app = express();
 
 app.use(cors());
@@ -22,15 +28,16 @@ app.get("/",(req,res)=>{
 app.post("/original",async(req,res)=>{
     try {
         let {originalURL} = req.body
+        let count = await redis.get("counter")
         let shortURL = base62.encode(count);
-        count++;
-        console.log(count)
+        
         let content = {
             originalURL:originalURL,
             shortURL:shortURL
         }
         let newURL = new URLModel(content)
         await newURL.save()
+        await redis.incr("counter")
         res.status(200).json({"new URL":`http://localhost:8080/${shortURL}`})
     } catch (error) {
         console.log(error)
