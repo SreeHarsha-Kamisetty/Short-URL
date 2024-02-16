@@ -43,7 +43,7 @@
     const tts = "Hello. Please enter your URL to shorten"
     const utterance = new SpeechSynthesisUtterance(tts)
     window.speechSynthesis.speak(utterance)
-    let backendURL = `http://localhost:8080`
+    let backendURL = `https://urlshortener-dfvj.onrender.com`
     let originalURL = document.getElementById('long-url')
     let submitBtn = document.getElementById("submit");
     let errorDiv = document.getElementById('error');
