@@ -38,7 +38,7 @@ app.post("/original",async(req,res)=>{
         let newURL = new URLModel(content)
         await newURL.save()
         await redis.incr("counter")
-        res.status(200).json({"new URL":`http://localhost:8080/${shortURL}`})
+        res.status(200).json({"newURL":`http://localhost:8080/${shortURL}`})
     } catch (error) {
         console.log(error)
         res.status(400).json({Error:"Error when shortening URL"})

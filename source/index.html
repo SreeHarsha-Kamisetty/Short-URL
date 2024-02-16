@@ -5,7 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Short-URL</title>
 </head>
+<style>
+    *{
+        margin: 10px;
+    }
+    body{
+        text-align: center;
+        padding:2%;
+      
+        
+        
+    }
+    textarea{
+        width: 50%;
+        padding: 1%;
+    }
+    #shorturl{
+        width: 50%;
+        border: 1px solid black;
+        margin-left:25%;
+        height: fit-content;
+        
+    }
+</style>
 <body>
     <h1>Welcome</h1>
+    <h2>Enter your URL</h2>
+    <textarea name="" id="long-url" cols="50" rows="5"></textarea>
+    <div id="error" style="color: red;"></div>
+    <button id="submit">Submit</button>
+    <h2>Short URL</h2>
+    <div id="shorturl"></div>
+    <button id="copy">CopyURL</button>
+    <div id="status"></div>
 </body>
+<script>
+    const tts = "Hello. Please enter your URL to shorten"
+    const utterance = new SpeechSynthesisUtterance(tts)
+    window.speechSynthesis.speak(utterance)
+    let backendURL = `http://localhost:8080`
+    let originalURL = document.getElementById('long-url')
+    let submitBtn = document.getElementById("submit");
+    let errorDiv = document.getElementById('error');
+    let newURL = document.getElementById('shorturl')
+    let statusDiv = document.getElementById('status')
+
+
+    submitBtn.addEventListener("click",()=>{
+        if(originalURL.value ==''){
+            errorDiv.innerText = 'Please Enter your URL'
+        }
+        else{
+            getShortURL(originalURL.value)
+           
+        }
+    })
+    async function getShortURL(url){
+        try {
+            let res = await fetch(`${backendURL}/original`,{
+                method:"POST",
+                headers:{
+                    "Content-type":"application/json"
+                },
+                body:JSON.stringify({
+                    originalURL:url
+                })
+            })
+            let data = await res.json();
+            console.log(data.newURL);
+            newURL.textContent = data.newURL;
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+const copyButton = document.getElementById('copy');
+
+if (copyButton && navigator.clipboard) {
+    copyButton.addEventListener('click', async () => {
+        const textToCopy = newURL.textContent;
+
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+            statusDiv.innerText = "URL copied to clipboard"
+            const message = "URL copied to clipboard"
+            const utt = new SpeechSynthesisUtterance(message)
+            window.speechSynthesis.speak(utt);
+        } catch (err) {
+            console.error('Unable to copy text to clipboard.', err);
+        }
+    });
+} else {
+    console.error('Clipboard API not supported or copy button not found in this browser.');
+}
+
+
+
+</script>
 </html>
