@@ -40,9 +40,26 @@
     <div id="status"></div>
 </body>
 <script>
-    const tts = "Hello. Please enter your URL to shorten"
+
+    function greeting(){
+        const tts = "Hello. Please enter your URL to shorten"
     const utterance = new SpeechSynthesisUtterance(tts)
     window.speechSynthesis.speak(utterance)
+    console.log("executed")
+    }
+    let greeted = false;
+    window.onclick = function() {
+        if(!greeted){
+            greeting();
+            greeted=true
+        }
+    
+};
+
+
+
+    
+    
     let backendURL = `https://urlshortener-dfvj.onrender.com`
     let originalURL = document.getElementById('long-url')
     let submitBtn = document.getElementById("submit");
